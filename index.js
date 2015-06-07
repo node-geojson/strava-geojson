@@ -1,48 +1,66 @@
 var got = require('got'),
     xtend = require('xtend'),
-    pf = require('printf'),
-    queue = require('queue-async');
-
-var q = queue(1);
-
-var D = true;
+    geojsonStream = require('geojson-stream'),
+    through2 = require('through2'),
+    Readable = require('stream').Readable,
+    util = require('util');
 
 var defaults = {
     headers: {
-        Authorization: pf('Bearer %s', process.env.STRAVA_TOKEN)
+        Authorization: 'Bearer ' + process.env.STRAVA_TOKEN
     },
     json: true
 };
 
-function getPage(page, callback) {
-    console.error('loading page %s', page);
-    got('https://www.strava.com/api/v3/athlete/activities', xtend(defaults, {
-        query: {
-            per_page: 20,
-            page: page
-        }
-    }), function(err, res) {
-        if (!D || res.length === 200) {
-            q.defer(getPage, page + 1);
-        }
-        callback(err, res);
-    });
+util.inherits(Source, Readable);
+
+function Source(opt) {
+    Readable.call(this, opt);
+    this.page = 1;
+    this.inflight = false;
 }
 
-q.defer(getPage, 1);
+Source.prototype._read = function() {
+    if (this.inflight) return;
+    this.inflight = true;
+    var page = this.page;
+    got('https://www.strava.com/api/v3/athlete/activities', xtend(defaults, {
+        query: { per_page: 100, page: page }
+    }), function(err, res) {
+        this.page++;
+        this.inflight = false;
+        if (err) this.emit('error', err);
+        res.forEach(function(r) {
+            this.push(String(r.id));
+        }.bind(this));
+        if (res.length < 100) {
+            this.emit('end');
+        }
+    }.bind(this));
+};
 
-q.awaitAll(function(err, res) {
-    if (err) throw err;
+function convert(stream) {
+    return stream.filter(function(e) {
+        return e.type === 'latlng';
+    }).map(function(e) {
+        return {
+            type: 'Feature',
+            geometry: {
+                type: 'LineString',
+                coordinates: e.data.map(function(coord) {
+                    return coord.slice().reverse();
+                })
+            }
+        };
+    })[0];
+}
 
-    var flattened = res.reduce(function(memo, item) {
-        return memo.concat(item);
-    }, []);
-
-    console.error('got %s items', flattened.length);
-
-    console.log(flattened[0]);
-
-    got(pf('https://www.strava.com/api/v3/activities/%s/streams/latlng', flattened[0].id), defaults, function(err, res) {
-        console.log(res);
-    });
-});
+(new Source())
+    .pipe(through2.obj(function(chunk, enc, callback) {
+        got('https://www.strava.com/api/v3/activities/' + chunk + '/streams/latlng', defaults, callback);
+    }))
+    .pipe(through2.obj(function(chunk, enc, callback) {
+        callback(null, convert(chunk));
+    }))
+    .pipe(geojsonStream.stringify())
+    .pipe(process.stdout);
