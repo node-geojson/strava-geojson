@@ -23,10 +23,12 @@
   "homepage": "https://github.com/tmcw/strava-geojson#readme",
   "dependencies": {
     "concat-stream": "^1.4.8",
+    "filesaver.js": "^0.1.1",
     "material-ui": "^0.8.0",
     "react": "^0.13.3",
     "react-tap-event-plugin": "^0.1.7",
-    "strava-geojson": "^1.0.0"
+    "strava-geojson": "^1.0.0",
+    "take-stream": "0.0.0"
   },
   "devDependencies": {
     "babelify": "^6.1.2",
