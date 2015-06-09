@@ -1,38 +1,37 @@
-var xhr = require('httpify'),
+var jsonp = require('jsonp'),
     qs = require('querystring'),
     geojsonStream = require('geojson-stream'),
     filter = require('through2-filter').obj,
     through2 = require('through2').obj,
-    Readable = require('stream').Readable,
+    Readable = require('readable-stream'),
     util = require('util');
 
 var ACTIVITIES_URL = 'https://www.strava.com/api/v3/athlete/activities';
+
+util.inherits(Source, Readable);
 
 function Source(opt) {
     opt.objectMode = true;
     Readable.call(this, opt);
     this.page = 1;
     this.STRAVA_TOKEN = opt.STRAVA_TOKEN;
-    this.inflight = false;
 }
 
-util.inherits(Source, Readable);
-
 Source.prototype._read = function() {
-    if (this.isPaused()) return;
     this.pause();
     var page = this.page;
-    xhr({
-        url: ACTIVITIES_URL + '?' + qs.stringify({ per_page: 100, page: page }),
-        headers: { Authorization: 'Bearer ' + this.STRAVA_TOKEN },
-        type: 'json'
-    }, function(err, res) {
+    jsonp(ACTIVITIES_URL + '?' +
+        qs.stringify({
+            per_page: 100,
+            access_token: this.STRAVA_TOKEN,
+            page: page
+        }), { timeout: 5000 }, function(err, res) {
         this.page++;
         if (err) this.emit('error', err);
-        this.emit('debug', 'xhr page of ' + res.body.length + ' items');
+        this.emit('debug', 'xhr page of ' + res.length + ' items');
         this.resume();
-        if (res.body.length) this.push(res.body);
-        if (res.body.length < 100) {
+        if (res.length) this.push(res);
+        if (res.length < 100) {
             this.push(null);
             this.emit('end');
         }
@@ -66,15 +65,15 @@ function loadRuns(STRAVA_TOKEN) {
             callback();
         }))
         .pipe(through2(function(chunk, enc, callback) {
-            xhr({
-                url: 'https://www.strava.com/api/v3/activities/' + chunk + '/streams/latlng',
-                type: 'json',
-                headers: { Authorization: 'Bearer ' + STRAVA_TOKEN }
-            }, function(err, res) {
-                if (err) console.error(err);
-                // purposely avoid throwing on errors
-                callback(null, res.body);
-            });
+           jsonp('https://www.strava.com/api/v3/activities/' + chunk + '/streams/latlng?' +
+           qs.stringify({
+               access_token: STRAVA_TOKEN
+           }), { timeout: 5000 }, function(err, res) {
+               console.log(err, res);
+               if (err) console.error(err);
+               // purposely avoid throwing on errors
+               callback(null, res);
+           });
         }))
         .pipe(filter(Array.isArray))
         .pipe(through2(function(chunk, enc, callback) {
