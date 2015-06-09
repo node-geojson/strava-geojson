@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+var stravaExport = require('../');
+
+if (process.argv.length !== 3) {
+    throw new Error('usage: strava-export TOKEN');
+}
+
+stravaExport(process.argv[2])
+    .pipe(process.stdout);

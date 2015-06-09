@@ -1,14 +1,13 @@
 {
-  "name": "jog",
+  "name": "strava-export",
   "version": "1.0.0",
   "description": "pull strava runs and convert them to geojson",
   "main": "index.js",
   "dependencies": {
     "geojson-stream": "0.0.0",
-    "got": "^3.2.0",
+    "httpify": "^1.0.0",
     "through2": "^0.6.5",
-    "through2-filter": "^1.4.1",
-    "xtend": "^4.0.0"
+    "through2-filter": "^1.4.1"
   },
   "devDependencies": {},
   "scripts": {
@@ -16,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tmcw/jog.git"
+    "url": "git+https://github.com/tmcw/strava-export.git"
   },
   "keywords": [
     "strava",
@@ -26,7 +25,7 @@
   "author": "Tom MacWright",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/tmcw/jog/issues"
+    "url": "https://github.com/tmcw/strava-export/issues"
   },
-  "homepage": "https://github.com/tmcw/jog#readme"
+  "homepage": "https://github.com/tmcw/strava-export#readme"
 }
