@@ -2,7 +2,7 @@ var geojsonStream = require('geojson-stream'),
     filter = require('through2-filter').obj,
     through2 = require('through2').obj;
 
-var xhr = require('./lib/xhr_browser'),
+var xhr = require('./lib/xhr.js'),
     convert = require('./lib/convert.js'),
     Source = require('./lib/source');
 
@@ -17,7 +17,6 @@ function loadRuns(STRAVA_TOKEN) {
         }))
         .pipe(through2(function(id, enc, callback) {
             xhr.getActivity(STRAVA_TOKEN, id, function(err, res) {
-               console.log(err, res);
                if (err) console.error(err);
                // purposely avoid throwing on errors
                callback(null, res);

@@ -5,11 +5,15 @@
   "main": "index.js",
   "dependencies": {
     "geojson-stream": "0.0.0",
+    "got": "^3.2.0",
     "httpify": "^1.0.0",
     "jsonp": "^0.2.0",
     "readable-stream": "^1.0.33",
     "through2": "^0.6.5",
     "through2-filter": "^1.4.1"
+  },
+  "browser": {
+    "lib/xhr.js": "lib/xhr_browser.js"
   },
   "devDependencies": {},
   "scripts": {
