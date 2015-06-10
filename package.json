@@ -12,7 +12,8 @@
     "through2-filter": "^1.4.1"
   },
   "browser": {
-    "lib/xhr.js": "lib/xhr_browser.js"
+    "./lib/xhr.js": "./lib/xhr_browser.js",
+    "got": false
   },
   "devDependencies": {},
   "scripts": {
