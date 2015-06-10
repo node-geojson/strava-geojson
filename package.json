@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "budo index.js --live"
+    "start": "budo index.js --live --serve=bundle.js",
+    "build": "browserify index.js > bundle.js"
   },
   "browserify": {
     "transform": [
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "babelify": "^6.1.2",
+    "browserify": "^10.2.4",
     "budo": "^4.0.0"
   }
 }
