@@ -1,6 +1,6 @@
 {
   "name": "strava-geojson",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "pull strava runs and convert them to geojson",
   "main": "index.js",
   "dependencies": {
