@@ -19,7 +19,7 @@ With node,
 ## cli
 
 ```sh
-$ geojson-stream YOUR_ACCESS_TOKEN_HERE > my_runs.geojson
+$ strava-geojson YOUR_ACCESS_TOKEN_HERE > my_runs.geojson
 ```
 
 ## node api

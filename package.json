@@ -15,6 +15,9 @@
     "./lib/xhr.js": "./lib/xhr_browser.js",
     "got": false
   },
+  "bin": {
+    "strava-geojson": "./bin/strava-geojson"
+  },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
