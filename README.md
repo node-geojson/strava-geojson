@@ -1,5 +1,7 @@
 # strava-geojson
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/tmcw/strava-geojson.svg)](https://greenkeeper.io/)
+
 Export runs from [Strava](https://www.strava.com/) into
 [GeoJSON](http://geojson.org/).
 
