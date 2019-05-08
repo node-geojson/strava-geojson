@@ -26,7 +26,7 @@ $ strava-geojson YOUR_ACCESS_TOKEN_HERE > my_runs.geojson
 
 ```js
 
-var stravaExport = require('strava-export');
+var stravaExport = require('strava-geojson');
 
 stravaExport(STRAVA_TOKEN).pipe(process.stdout);
 ```
